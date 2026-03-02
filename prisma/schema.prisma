@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User & Role Management
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      String   // ADMIN, FRONT_DESK, DOCTOR, BILLING
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  doctorProfile Doctor?
+}
+
+// Hospital Master
+model Hospital {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  contactInfo String
+  branch      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Doctor Master
+model Doctor {
+  id             String   @id @default(cuid())
+  name           String
+  specialization String
+  department     String
+  availability   String   // e.g., "Mon-Fri 9AM-5PM"
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  opdVisits      OPDVisit[]
+}
+
+// Diagnosis Type Master
+model DiagnosisType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  opdDiagnoses OPDDiagnosis[]
+}
+
+// Treatment Type Master
+model TreatmentType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  subTreatments       SubTreatmentType[]
+  receiptTransactions ReceiptTransaction[]
+}
+
+// Sub Treatment Type Master
+model SubTreatmentType {
+  id              String   @id @default(cuid())
+  name            String
+  treatmentTypeId String
+  treatmentType   TreatmentType @relation(fields: [treatmentTypeId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  receiptTransactions ReceiptTransaction[]
+}
+
+// Patient Registration
+model Patient {
+  id        String   @id @default(cuid())
+  uniqueId  String   @unique // Auto-generated ID (e.g., PAT-001)
+  name      String
+  age       Int
+  gender    String
+  mobile    String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  opdVisits OPDVisit[]
+  receipts  Receipt[]
+}
+
+// OPD Entry
+model OPDVisit {
+  id         String   @id @default(cuid())
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  doctorId   String
+  doctor     Doctor   @relation(fields: [doctorId], references: [id])
+  visitDate  DateTime @default(now())
+  reason     String
+  status     String   @default("QUEUED") // QUEUED, IN_CONSULTATION, COMPLETED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  diagnoses OPDDiagnosis[]
+  receipts  Receipt[]
+}
+
+// OPD Diagnosis
+model OPDDiagnosis {
+  id              String   @id @default(cuid())
+  opdVisitId      String
+  opdVisit        OPDVisit @relation(fields: [opdVisitId], references: [id])
+  diagnosisTypeId String
+  diagnosisType   DiagnosisType @relation(fields: [diagnosisTypeId], references: [id])
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Receipt Entry
+model Receipt {
+  id            String   @id @default(cuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  opdVisitId    String?
+  opdVisit      OPDVisit? @relation(fields: [opdVisitId], references: [id])
+  totalAmount   Float
+  paymentStatus String   @default("UNPAID") // UNPAID, PAID
+  date          DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  transactions  ReceiptTransaction[]
+}
+
+// Receipt Transactions (Line items)
+model ReceiptTransaction {
+  id                 String   @id @default(cuid())
+  receiptId          String
+  receipt            Receipt  @relation(fields: [receiptId], references: [id])
+  treatmentTypeId    String
+  treatmentType      TreatmentType @relation(fields: [treatmentTypeId], references: [id])
+  subTreatmentTypeId String?
+  subTreatmentType   SubTreatmentType? @relation(fields: [subTreatmentTypeId], references: [id])
+  amount             Float
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
