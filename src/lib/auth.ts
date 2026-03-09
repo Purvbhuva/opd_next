@@ -31,10 +31,16 @@ export async function getSession() {
 }
 
 export async function setSession(token: string) {
+    //cookieStore is an object used to manage cookies.
     const cookieStore = await cookies()
+    // auth_token cookie name
     cookieStore.set('auth_token', token, {
         httpOnly: true,
+        // Cookie works only over HTTPS.
+        // In production → true
+        // In development → false
         secure: process.env.NODE_ENV === 'production',
+        // Controls cross-site requests.
         sameSite: 'lax',
         path: '/',
         maxAge: 60 * 60 * 24, // 1 day

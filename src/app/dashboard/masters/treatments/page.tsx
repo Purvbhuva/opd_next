@@ -81,12 +81,12 @@ export default function TreatmentMaster() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Treatment Type Master</h1>
-                    <p className="text-zinc-500">Manage standard high-level treatments (e.g., Surgery, Therapy).</p>
+                    <p className="text-muted-foreground">Manage standard high-level treatments (e.g., Surgery, Therapy).</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     {/* Link to Sub-Treatments */}
                     <Button variant="outline" asChild>
                         <a href="/dashboard/masters/sub-treatments">Configure Sub-Treatments</a>
@@ -123,10 +123,10 @@ export default function TreatmentMaster() {
                 </div>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-0">
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Treatment Name</TableHead>
                                 <TableHead>Description</TableHead>
@@ -137,7 +137,7 @@ export default function TreatmentMaster() {
                             {loading ? (
                                 <TableRow><TableCell colSpan={3} className="text-center py-8">Loading...</TableCell></TableRow>
                             ) : treatments.length === 0 ? (
-                                <TableRow><TableCell colSpan={3} className="text-center py-8 text-zinc-500">No treatments found.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={3} className="py-8 text-center text-muted-foreground">No treatments found.</TableCell></TableRow>
                             ) : (
                                 treatments.map(t => (
                                     <TableRow key={t.id}>

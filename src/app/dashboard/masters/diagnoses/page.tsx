@@ -81,10 +81,10 @@ export default function DiagnosisMaster() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Diagnosis Master</h1>
-                    <p className="text-zinc-500">Manage standard diagnosis types used by doctors.</p>
+                    <p className="text-muted-foreground">Manage standard diagnosis types used by doctors.</p>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
@@ -117,10 +117,10 @@ export default function DiagnosisMaster() {
                 </Dialog>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-0">
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Diagnosis Name</TableHead>
                                 <TableHead>Description</TableHead>
@@ -131,7 +131,7 @@ export default function DiagnosisMaster() {
                             {loading ? (
                                 <TableRow><TableCell colSpan={3} className="text-center py-8">Loading...</TableCell></TableRow>
                             ) : diagnoses.length === 0 ? (
-                                <TableRow><TableCell colSpan={3} className="text-center py-8 text-zinc-500">No diagnoses found.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={3} className="py-8 text-center text-muted-foreground">No diagnoses found.</TableCell></TableRow>
                             ) : (
                                 diagnoses.map(diag => (
                                     <TableRow key={diag.id}>

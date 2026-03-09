@@ -16,6 +16,64 @@ export async function GET(req: Request) {
         endOfDay.setHours(23, 59, 59, 999)
 
         switch (type) {
+            case 'dashboard-summary': {
+                const [financialStats, activeDoctors, patientsWaiting, diagnosisStats] = await Promise.all([
+                    prisma.receipt.aggregate({
+                        _sum: { totalAmount: true },
+                        _count: { id: true },
+                        where: {
+                            paymentStatus: 'PAID',
+                            date: {
+                                gte: startOfDay,
+                                lte: endOfDay,
+                            },
+                        },
+                    }),
+                    prisma.doctor.count(),
+                    prisma.oPDVisit.count({ where: { status: 'QUEUED' } }),
+                    prisma.oPDDiagnosis.groupBy({
+                        by: ['diagnosisTypeId'],
+                        _count: { id: true },
+                        where: {
+                            createdAt: {
+                                gte: startOfDay,
+                                lte: endOfDay,
+                            },
+                        },
+                    }),
+                ])
+
+                let topDiagnosisName = 'No diagnoses yet'
+                let topDiagnosisCount = 0
+
+                if (diagnosisStats.length > 0) {
+                    const topDiagnosis = diagnosisStats.reduce((prev, curr) =>
+                        curr._count.id > prev._count.id ? curr : prev
+                    )
+
+                    topDiagnosisCount = topDiagnosis._count.id
+
+                    const diagnosis = await prisma.diagnosisType.findUnique({
+                        where: { id: topDiagnosis.diagnosisTypeId },
+                        select: { name: true },
+                    })
+
+                    if (diagnosis?.name) {
+                        topDiagnosisName = diagnosis.name
+                    }
+                }
+
+                return NextResponse.json({
+                    totalRevenueToday: Number(financialStats._sum.totalAmount || 0),
+                    totalReceiptsToday: financialStats._count.id,
+                    activeDoctors,
+                    patientsWaiting,
+                    topDiagnosisName,
+                    topDiagnosisCount,
+                    lastUpdatedAt: new Date().toISOString(),
+                })
+            }
+
             case 'doctor-wise': {
                 const stats = await prisma.oPDVisit.groupBy({
                     by: ['doctorId'],

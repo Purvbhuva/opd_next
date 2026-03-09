@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server'
 import { verifyToken } from './lib/auth'
 
 // Define protected routes and their allowed roles
+
 const routeRoles: Record<string, string[]> = {
     '/dashboard': ['ADMIN', 'FRONT_DESK', 'DOCTOR', 'BILLING'],
     '/admin': ['ADMIN'],
@@ -18,6 +19,7 @@ export async function middleware(request: NextRequest) {
     if (pathname === '/login' || pathname.startsWith('/api/auth') || pathname === '/' || pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
         // If user is already logged in, redirect away from login page to dashboard
         if (pathname === '/login' || pathname === '/') {
+            // auth_token = JWT_TOKEN
             const token = request.cookies.get('auth_token')?.value
             if (token) {
                 const payload = await verifyToken(token)
@@ -70,6 +72,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
 }
 
+// This tells Next.js where middleware should run.
+// It runs on all routes except:
+// /_next/static
+// /_next/image
+// /favicon.ico
+// These are static files.
 export const config = {
     matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { signToken, setSession } from '@/lib/auth'
-import { findDummyUser } from '@/lib/dummy-users'
 
 const prisma = new PrismaClient()
 
@@ -18,36 +17,54 @@ export async function POST(req: Request) {
         }
 
         const normalizedUsername = String(username).trim()
-        let userWithoutPassword: any = null
+        const normalizedUsernameLower = normalizedUsername.toLowerCase()
+        const normalizedPassword = String(password)
 
-        const user = await prisma.user.findUnique({
+        let user = await prisma.user.findUnique({
             where: { username: normalizedUsername }
         })
 
-        if (user) {
-            const isPasswordValid = await bcrypt.compare(password, user.password)
+        if (!user) {
+            const users = await prisma.user.findMany()
+            user = users.find(
+                (candidateUser) =>
+                    candidateUser.username.toLowerCase() === normalizedUsernameLower
+            ) || null
+        }
 
-            if (!isPasswordValid) {
-                return NextResponse.json(
-                    { message: 'Invalid credentials' },
-                    { status: 401 }
-                )
-            }
+        if (!user) {
+            return NextResponse.json(
+                { message: 'Invalid credentials' },
+                { status: 401 }
+            )
+        }
 
-            const { password: _, ...dbUserWithoutPassword } = user
-            userWithoutPassword = dbUserWithoutPassword
-        } else {
-            const dummyUser = findDummyUser(normalizedUsername, String(password))
+        let isPasswordValid = false
 
-            if (!dummyUser) {
-                return NextResponse.json(
-                    { message: 'Invalid credentials' },
-                    { status: 401 }
-                )
-            }
+        try {
+            isPasswordValid = await bcrypt.compare(normalizedPassword, user.password)
+        } catch {
+            isPasswordValid = false
+        }
 
-            const { password: _, ...dummyUserWithoutPassword } = dummyUser
-            userWithoutPassword = dummyUserWithoutPassword
+        if (!isPasswordValid && !user.password.startsWith('$2')) {
+            isPasswordValid = normalizedPassword === user.password
+        }
+
+        if (!isPasswordValid) {
+            return NextResponse.json(
+                { message: 'Invalid credentials' },
+                { status: 401 }
+            )
+        }
+
+        const userWithoutPassword = {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
         }
 
         // Generate JWT token

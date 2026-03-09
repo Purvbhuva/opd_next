@@ -27,8 +27,13 @@ export async function POST(req: Request) {
     try {
         const data = await req.json()
 
+        // Validate required fields
+        if (!data.password) {
+            return NextResponse.json({ message: 'Password is required' }, { status: 400 })
+        }
+
         // First we need to create the User for this doctor to login
-        const passwordHash = await bcrypt.hash('password123', 10) // default password for new doctors
+        const passwordHash = await bcrypt.hash(data.password, 10)
 
         const user = await prisma.user.create({
             data: {

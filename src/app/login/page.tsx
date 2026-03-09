@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Stethoscope } from 'lucide-react'
 import { toast } from 'sonner'
-import { DUMMY_USERS } from '@/lib/dummy-users'
 
 export default function LoginPage() {
     const [username, setUsername] = useState('')
@@ -111,16 +110,6 @@ export default function LoginPage() {
                         <p className="text-xs text-center text-zinc-500 dark:text-zinc-400">
                             Secure access restricted to authorized personnel.
                         </p>
-                        <div className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-                            <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-2">Dummy login users</p>
-                            <div className="space-y-1">
-                                {DUMMY_USERS.map((user) => (
-                                    <p key={user.id} className="text-xs text-zinc-600 dark:text-zinc-400">
-                                        {user.username} / {user.password} ({user.role})
-                                    </p>
-                                ))}
-                            </div>
-                        </div>
                     </CardFooter>
                 </form>
             </Card>

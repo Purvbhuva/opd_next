@@ -67,15 +67,15 @@ export default function PatientRegistration() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Patient Records</h1>
-                    <p className="text-zinc-500">Register new patients or search existing records.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Patient Records</h1>
+                    <p className="text-muted-foreground mt-1">Register new patients or search existing records.</p>
                 </div>
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button className="shadow-md shadow-primary/20">
                             <Plus className="mr-2 h-4 w-4" /> New Patient
                         </Button>
                     </DialogTrigger>
@@ -85,7 +85,7 @@ export default function PatientRegistration() {
                                 <DialogTitle>Register New Patient</DialogTitle>
                                 <DialogDescription>A unique Patient ID will be generated upon save.</DialogDescription>
                             </DialogHeader>
-                            <div className="space-y-4 py-4 grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2">
                                 <div className="space-y-2 col-span-2">
                                     <Label htmlFor="name">Full Name</Label>
                                     <Input id="name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
@@ -123,16 +123,16 @@ export default function PatientRegistration() {
                 </Dialog>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-4">
-                    <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+                    <form onSubmit={handleSearch} className="mb-6 flex flex-wrap gap-2">
                         <Input
                             placeholder="Search by Name, Mobile, or Patient ID..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="max-w-md"
                         />
-                        <Button type="submit" variant="secondary">
+                        <Button type="submit" variant="secondary" className="shadow-sm">
                             <Search className="h-4 w-4 mr-2" /> Search
                         </Button>
                         {search && (
@@ -141,7 +141,7 @@ export default function PatientRegistration() {
                     </form>
 
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Patient ID</TableHead>
                                 <TableHead>Name</TableHead>
@@ -154,7 +154,7 @@ export default function PatientRegistration() {
                             {loading ? (
                                 <TableRow><TableCell colSpan={5} className="text-center py-8">Searching records...</TableCell></TableRow>
                             ) : patients.length === 0 ? (
-                                <TableRow><TableCell colSpan={5} className="text-center py-8 text-zinc-500">No patients found. Try adjusting your search.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">No patients found. Try adjusting your search.</TableCell></TableRow>
                             ) : (
                                 patients.map(p => (
                                     <TableRow key={p.id}>

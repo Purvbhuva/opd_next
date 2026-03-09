@@ -32,12 +32,12 @@ export default function ReportsScreen() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Analytics & Reports</h1>
-                    <p className="text-zinc-500">Monitor hospital performance, finances, and doctor statistics.</p>
+                    <p className="text-muted-foreground">Monitor hospital performance, finances, and doctor statistics.</p>
                 </div>
-                <div className="w-64">
+                <div className="w-full max-w-sm">
                     <Select value={reportType} onValueChange={setReportType}>
                         <SelectTrigger>
                             <SelectValue placeholder="Select Report Type" />
@@ -52,9 +52,9 @@ export default function ReportsScreen() {
             </div>
 
             {!loading && !data && (
-                <Card className="border-dashed">
-                    <CardContent className="flex flex-col items-center justify-center h-64 text-zinc-500">
-                        <Ban className="w-8 h-8 mb-4 text-zinc-300" />
+                <Card className="border-dashed border-border/70">
+                    <CardContent className="flex h-64 flex-col items-center justify-center text-muted-foreground">
+                        <Ban className="mb-4 h-8 w-8 text-muted-foreground/40" />
                         <p>No data available to display for this report type.</p>
                     </CardContent>
                 </Card>
@@ -84,16 +84,16 @@ export default function ReportsScreen() {
                             </CardContent>
                         </Card>
 
-                        <Card>
+                        <Card className="border-border/70">
                             <CardHeader className="flex flex-row items-center justify-between pb-2">
                                 <CardTitle className="text-sm font-medium">Receipts Issued</CardTitle>
-                                <BarChart3 className="h-4 w-4 text-zinc-500" />
+                                <BarChart3 className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
                                 <div className="text-4xl font-bold">
                                     {data.totalReceiptsToday}
                                 </div>
-                                <p className="text-xs text-zinc-500 mt-1">Total invoices processed today.</p>
+                                <p className="mt-1 text-xs text-muted-foreground">Total invoices processed today.</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -101,29 +101,31 @@ export default function ReportsScreen() {
             )}
 
             {reportType === 'doctor-wise' && data && !loading && (
-                <Card>
+                <Card className="overflow-hidden border-border/70">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Users className="w-5 h-5 text-blue-500" /> Patient Loads by Doctor</CardTitle>
                         <CardDescription>Number of total visits (all statuses) assigned to each doctor.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
                         <Table>
-                            <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                            <TableHeader className="bg-secondary/30">
                                 <TableRow>
                                     <TableHead>Doctor Name</TableHead>
                                     <TableHead className="text-right">Total Patients Handled</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {data.length === 0 ? (
-                                    <TableRow><TableCell colSpan={2} className="text-center py-8 text-zinc-500">No data available.</TableCell></TableRow>
-                                ) : (
-                                    data.map((d: any) => (
-                                        <TableRow key={d.doctorId}>
-                                            <TableCell className="font-medium">Dr. {d.doctor?.name || 'Unknown'}</TableCell>
-                                            <TableCell className="text-right font-bold text-lg">{d._count.id}</TableCell>
+                                {Array.isArray(data) && data.length === 0 ? (
+                                    <TableRow><TableCell colSpan={2} className="py-8 text-center text-muted-foreground">No data available.</TableCell></TableRow>
+                                ) : Array.isArray(data) ? (
+                                    data.map((d: any, index: number) => (
+                                        <TableRow key={`doctor-${index}-${d.doctorId}`}>
+                                            <TableCell className="font-medium">Dr. {d.doctorName || 'Unknown'}</TableCell>
+                                            <TableCell className="text-right font-bold text-lg">{d.patientCount}</TableCell>
                                         </TableRow>
                                     ))
+                                ) : (
+                                    <TableRow><TableCell colSpan={2} className="py-8 text-center text-muted-foreground">Invalid data format.</TableCell></TableRow>
                                 )}
                             </TableBody>
                         </Table>
@@ -132,29 +134,31 @@ export default function ReportsScreen() {
             )}
 
             {reportType === 'diagnosis-wise' && data && !loading && (
-                <Card>
+                <Card className="overflow-hidden border-border/70">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><ActivitySquare className="w-5 h-5 text-red-500" /> Top Diagnoses Frequentcy</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><ActivitySquare className="w-5 h-5 text-red-500" /> Top Diagnoses Frequency</CardTitle>
                         <CardDescription>Aggregated count of common diseases or conditions diagnosed.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
                         <Table>
-                            <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                            <TableHeader className="bg-secondary/30">
                                 <TableRow>
                                     <TableHead>Diagnosis Condition</TableHead>
                                     <TableHead className="text-right">Occurrence Count</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {data.length === 0 ? (
-                                    <TableRow><TableCell colSpan={2} className="text-center py-8 text-zinc-500">No data available.</TableCell></TableRow>
-                                ) : (
-                                    data.map((d: any) => (
-                                        <TableRow key={d.diagnosisTypeId}>
-                                            <TableCell className="font-medium text-red-600 dark:text-red-400">{d.diagnosisType?.name || 'Unknown'}</TableCell>
-                                            <TableCell className="text-right font-bold font-mono text-lg">{d._count.id}</TableCell>
+                                {Array.isArray(data) && data.length === 0 ? (
+                                    <TableRow><TableCell colSpan={2} className="py-8 text-center text-muted-foreground">No data available.</TableCell></TableRow>
+                                ) : Array.isArray(data) ? (
+                                    data.map((d: any, index: number) => (
+                                        <TableRow key={`diagnosis-${index}-${d.diagnosisTypeId}`}>
+                                            <TableCell className="font-medium text-red-600 dark:text-red-400">{d.diagnosisName || 'Unknown'}</TableCell>
+                                            <TableCell className="text-right font-bold font-mono text-lg">{d.count}</TableCell>
                                         </TableRow>
                                     ))
+                                ) : (
+                                    <TableRow><TableCell colSpan={2} className="py-8 text-center text-muted-foreground">Invalid data format.</TableCell></TableRow>
                                 )}
                             </TableBody>
                         </Table>

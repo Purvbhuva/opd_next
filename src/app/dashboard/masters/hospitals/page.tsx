@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -82,10 +82,10 @@ export default function HospitalMaster() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Hospital Master</h1>
-                    <p className="text-zinc-500">Manage hospital details and branches.</p>
+                    <p className="text-muted-foreground">Manage hospital details and branches.</p>
                 </div>
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -129,10 +129,10 @@ export default function HospitalMaster() {
                 </Dialog>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-0">
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Hospital Name</TableHead>
                                 <TableHead>Branch</TableHead>
@@ -147,7 +147,7 @@ export default function HospitalMaster() {
                                 </TableRow>
                             ) : hospitals.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center py-8 text-zinc-500">No hospitals found.</TableCell>
+                                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">No hospitals found.</TableCell>
                                 </TableRow>
                             ) : (
                                 hospitals.map(hospital => (

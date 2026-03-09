@@ -14,7 +14,7 @@ export default function DoctorMaster() {
     const [doctors, setDoctors] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [formData, setFormData] = useState({ id: '', name: '', username: '', specialization: '', department: '', availability: '' })
+    const [formData, setFormData] = useState({ id: '', name: '', username: '', password: '', specialization: '', department: '', availability: '' })
 
     const fetchDoctors = async () => {
         setLoading(true)
@@ -73,22 +73,23 @@ export default function DoctorMaster() {
                 id: doctor.id,
                 name: doctor.name,
                 username: doctor.user.username,
+                password: '',
                 specialization: doctor.specialization,
                 department: doctor.department,
                 availability: doctor.availability
             })
         } else {
-            setFormData({ id: '', name: '', username: '', specialization: '', department: '', availability: '' })
+            setFormData({ id: '', name: '', username: '', password: '', specialization: '', department: '', availability: '' })
         }
         setIsDialogOpen(true)
     }
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Doctor Master</h1>
-                    <p className="text-zinc-500">Manage doctor profiles and login access.</p>
+                    <p className="text-muted-foreground">Manage doctor profiles and login access.</p>
                 </div>
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -102,19 +103,25 @@ export default function DoctorMaster() {
                             <DialogHeader>
                                 <DialogTitle>{formData.id ? 'Edit' : 'Add'} Doctor</DialogTitle>
                                 <DialogDescription>
-                                    Enter the doctor details. {!formData.id && 'A DOCTOR user account will automatically be created and the default password is "password123".'}
+                                    {!formData.id ? 'Enter the doctor details and set a login password.' : 'Update the doctor details.'}
                                 </DialogDescription>
                             </DialogHeader>
-                            <div className="grid grid-cols-2 gap-4 py-4">
+                            <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Full Name</Label>
                                     <Input id="name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                                 </div>
                                 {!formData.id && (
-                                    <div className="space-y-2">
-                                        <Label htmlFor="username">Login Username</Label>
-                                        <Input id="username" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} required />
-                                    </div>
+                                    <>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="username">Login Username</Label>
+                                            <Input id="username" value={formData.username} onChange={e => setFormData({ ...formData, username: e.target.value })} required />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="password">Login Password</Label>
+                                            <Input id="password" type="password" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} required />
+                                        </div>
+                                    </>
                                 )}
                                 <div className="space-y-2">
                                     <Label htmlFor="specialization">Specialization</Label>
@@ -138,10 +145,10 @@ export default function DoctorMaster() {
                 </Dialog>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-0">
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Doctor Name</TableHead>
                                 <TableHead>Username</TableHead>
@@ -157,7 +164,7 @@ export default function DoctorMaster() {
                                 </TableRow>
                             ) : doctors.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-8 text-zinc-500">No doctors found.</TableCell>
+                                    <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">No doctors found.</TableCell>
                                 </TableRow>
                             ) : (
                                 doctors.map(doctor => (

@@ -97,7 +97,7 @@ export default function SubTreatmentMaster() {
                 </Button>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Sub-Treatment Type Master</h1>
-                    <p className="text-zinc-500">Manage specific services that are billed to the patient.</p>
+                    <p className="text-muted-foreground">Manage specific services that are billed to the patient.</p>
                 </div>
             </div>
 
@@ -145,10 +145,10 @@ export default function SubTreatmentMaster() {
                 </Dialog>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-0">
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Sub-Treatment Name</TableHead>
                                 <TableHead>Parent Category</TableHead>
@@ -159,7 +159,7 @@ export default function SubTreatmentMaster() {
                             {loading ? (
                                 <TableRow><TableCell colSpan={3} className="text-center py-8">Loading...</TableCell></TableRow>
                             ) : subTreatments.length === 0 ? (
-                                <TableRow><TableCell colSpan={3} className="text-center py-8 text-zinc-500">No sub-treatments found.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={3} className="py-8 text-center text-muted-foreground">No sub-treatments found.</TableCell></TableRow>
                             ) : (
                                 subTreatments.map(sub => (
                                     <TableRow key={sub.id}>

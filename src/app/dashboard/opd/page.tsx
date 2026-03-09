@@ -68,13 +68,13 @@ function OPDEntryContent() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">OPD Entry & Queue</h1>
-                    <p className="text-zinc-500">Assign registered patients to doctors for consultation.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">OPD Entry & Queue</h1>
+                    <p className="text-muted-foreground mt-1">Assign registered patients to doctors for consultation.</p>
                 </div>
 
-                <Button onClick={() => setIsDialogOpen(true)}>
+                <Button onClick={() => setIsDialogOpen(true)} className="shadow-md shadow-primary/20">
                     New OPD Entry
                 </Button>
 
@@ -134,10 +134,10 @@ function OPDEntryContent() {
                 </Dialog>
             </div>
 
-            <Card>
+            <Card className="overflow-hidden border-border/70">
                 <CardContent className="p-0">
                     <Table>
-                        <TableHeader className="bg-zinc-50 dark:bg-zinc-800/50">
+                        <TableHeader className="bg-secondary/30">
                             <TableRow>
                                 <TableHead>Date & Time</TableHead>
                                 <TableHead>Patient Details</TableHead>
@@ -148,19 +148,19 @@ function OPDEntryContent() {
                         </TableHeader>
                         <TableBody>
                             {opdVisits.length === 0 ? (
-                                <TableRow><TableCell colSpan={5} className="text-center py-8 text-zinc-500">No active queued visits found.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={5} className="py-8 text-center text-muted-foreground">No active queued visits found.</TableCell></TableRow>
                             ) : (
                                 opdVisits.map(visit => (
                                     <TableRow key={visit.id}>
                                         <TableCell className="text-xs">{new Date(visit.visitDate).toLocaleString()}</TableCell>
                                         <TableCell>
                                             <div className="font-medium">{visit.patient?.name}</div>
-                                            <div className="text-xs text-zinc-500">{visit.patient?.uniqueId}</div>
+                                            <div className="text-xs text-muted-foreground">{visit.patient?.uniqueId}</div>
                                         </TableCell>
                                         <TableCell>Dr. {visit.doctor?.name}</TableCell>
                                         <TableCell className="max-w-[200px] truncate" title={visit.reason}>{visit.reason}</TableCell>
                                         <TableCell>
-                                            <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400 px-2 py-1 rounded text-xs font-semibold uppercase tracking-wider">
+                                            <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm border border-yellow-200 dark:border-yellow-800/50">
                                                 {visit.status}
                                             </span>
                                         </TableCell>
